@@ -29,17 +29,34 @@ namespace LinqPractice
             // FindTest(products);
             // FindAllTest(products);
             // WhereTest(products);
-            // TestWithSqlQuery(products);
+            // ClassicLinqTest(products);
+
+            var result = from p in products
+                         join c in categories
+                         on p.CategoryId equals c.CategoryId
+                         where p.UnitPrice > 5000
+                         orderby p.UnitPrice descending
+                         select new ProductDto
+                         {
+                             ProductId = p.ProductId,
+                             CategoryName = c.CategoryName,
+                             ProductName = p.ProductName,
+                             UnitPrice = p.UnitPrice
+                         };
 
 
+            foreach (var productDto in result)
+            {
+                Console.WriteLine(productDto.ProductName + " " + productDto.CategoryName + " " + productDto.UnitPrice);
+            }
         }
 
-        private static void TestWithSqlQuery(List<Product> products)
+        private static void ClassicLinqTest(List<Product> products)
         {
             var result = from p in products
                          where p.UnitPrice > 6000 && p.UnitsInStock > 1
                          orderby p.UnitPrice descending, p.ProductName ascending
-                         select p;
+                         select new ProductDto {ProductId = p.ProductId, ProductName = p.ProductName, UnitPrice = p.UnitPrice };
 
             foreach (var product in result)
             {
@@ -122,6 +139,14 @@ namespace LinqPractice
         }
 
 
+    }
+
+    class ProductDto
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string CategoryName { get; set; }
     }
 
     class Product
